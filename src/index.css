@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-50 text-gray-800 antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-hotel-50;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-hotel-400 rounded-full;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-slate-100 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply flex items-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-full
+           shadow-md transition-all duration-200 hover:shadow-lg active:scale-95;
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+  }
+
+  .btn-ghost {
+    @apply flex items-center gap-2 text-slate-600 text-sm font-medium px-4 py-2.5 rounded-full
+           bg-hotel-50 border border-hotel-200 transition-all duration-200 hover:bg-hotel-100 hover:text-hotel-800;
+  }
+
+  .category-sidebar-btn {
+    @apply w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium
+           transition-all duration-200 text-slate-500 hover:text-slate-800 hover:bg-hotel-50 hover:translate-x-1;
+  }
+
+  .category-sidebar-btn.active {
+    @apply text-hotel-800 font-semibold bg-gradient-to-r from-hotel-50 to-hotel-100;
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.12);
+  }
+
+  .tab-pill {
+    @apply flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold shrink-0
+           transition-all duration-200 whitespace-nowrap;
+  }
+
+  .tab-pill.active {
+    @apply text-white shadow-md;
+  }
+
+  .tab-pill.inactive {
+    @apply bg-white text-slate-600 border border-slate-200 hover:border-hotel-200 hover:text-hotel-700;
+  }
+
+  .item-row {
+    @apply flex items-start py-4 px-3 -mx-3 rounded-xl
+           border-b border-slate-50 last:border-0 transition-all duration-150
+           hover:bg-hotel-50 cursor-default;
+  }
+
+  .price-badge {
+    @apply text-xs font-bold px-2.5 py-1 rounded-full border;
+  }
+}
