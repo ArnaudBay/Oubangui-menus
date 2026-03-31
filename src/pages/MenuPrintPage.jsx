@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react'
 import { MENU } from '../data/menu.js'
 import { CATEGORY_IMAGES, imgUrl } from '../data/images.js'
+import { DISH_IMAGES } from '../data/dishImages.js'
 
 const fmt = (price) =>
   price != null ? price.toLocaleString('fr-FR') + ' F CFA' : 'Inclus'
@@ -25,6 +27,35 @@ const CATEGORY_COLORS = {
 
 export default function MenuPrintPage() {
   const categories = Object.entries(MENU)
+  const [ready, setReady] = useState(false)
+  const [progress, setProgress] = useState(0)
+
+  // Précharger toutes les images dès l'ouverture de la page
+  useEffect(() => {
+    const urls = []
+    // Images des catégories
+    Object.values(CATEGORY_IMAGES).forEach(cat => {
+      urls.push(imgUrl(cat.hero, 120, 120))
+    })
+    // Image spécifique de chaque plat
+    const uniqueIds = [...new Set(Object.values(DISH_IMAGES))]
+    uniqueIds.forEach(id => urls.push(imgUrl(id, 200, 160)))
+
+    let loaded = 0
+    const total = urls.length
+
+    urls.forEach(url => {
+      const img = new Image()
+      img.onload = img.onerror = () => {
+        loaded++
+        setProgress(Math.round((loaded / total) * 100))
+        if (loaded === total) setReady(true)
+      }
+      img.src = url
+    })
+  }, [])
+
+  const handlePrint = () => window.print()
 
   return (
     <div style={{ fontFamily: "'Georgia', 'Times New Roman', serif", background: '#fff', minHeight: '100vh' }}>
@@ -35,22 +66,51 @@ export default function MenuPrintPage() {
         display: 'flex', gap: 10,
       }}>
         <button
-          onClick={() => window.print()}
+          onClick={handlePrint}
+          disabled={!ready}
           style={{
-            background: '#1d4ed8', color: '#fff', border: 'none',
+            background: ready ? '#1d4ed8' : '#64748b', color: '#fff', border: 'none',
             borderRadius: 8, padding: '12px 28px', fontSize: 15,
-            fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 16px rgba(29,78,216,0.3)',
-            display: 'flex', alignItems: 'center', gap: 8,
+            fontWeight: 700, cursor: ready ? 'pointer' : 'not-allowed',
+            boxShadow: ready ? '0 4px 16px rgba(29,78,216,0.3)' : 'none',
+            display: 'flex', alignItems: 'center', gap: 8, minWidth: 260,
+            position: 'relative', overflow: 'hidden', transition: 'background 0.3s',
           }}
         >
-          <span>🖨️</span> Imprimer / Enregistrer en PDF
+          {/* Barre de progression */}
+          {!ready && (
+            <div style={{
+              position: 'absolute', left: 0, bottom: 0, height: 3,
+              background: '#7dd3fc', width: `${progress}%`,
+              transition: 'width 0.15s ease',
+            }} />
+          )}
+          {!ready ? (
+            <>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} style={{ animation: 'spin 1s linear infinite' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/>
+              </svg>
+              Chargement… {progress}%
+            </>
+          ) : (
+            <>
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                <rect x="6" y="14" width="12" height="8" rx="1" />
+              </svg>
+              Imprimer / Enregistrer en PDF
+            </>
+          )}
         </button>
         <a href="/" style={{
           background: '#6b7280', color: '#fff', borderRadius: 8,
           padding: '12px 20px', fontSize: 15, fontWeight: 600,
           textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6,
         }}>
-          ← Retour
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m7-7-7 7 7 7"/>
+          </svg>
+          Retour
         </a>
       </div>
 
@@ -132,7 +192,13 @@ export default function MenuPrintPage() {
           </div>
           <div style={{ width: 1, background: 'rgba(212,175,55,0.3)' }} />
           <div style={{ textAlign: 'center' }}>
-            <p style={{ color: '#d4af37', fontSize: 32, fontWeight: 700, margin: 0 }}>★★★</p>
+            <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginBottom: 4 }}>
+              {[0,1,2].map(n => (
+                <svg key={n} width="22" height="22" viewBox="0 0 24 24" fill="#d4af37">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              ))}
+            </div>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, letterSpacing: 2, margin: '4px 0 0', textTransform: 'uppercase' }}>Excellence</p>
           </div>
         </div>
@@ -233,7 +299,7 @@ export default function MenuPrintPage() {
               {images && (
                 <div style={{
                   position: 'absolute', inset: 0,
-                  backgroundImage: `url(${imgUrl(images.hero, 1200, 400)})`,
+                  backgroundImage: `url(${imgUrl(images.hero, 800, 300)})`,
                   backgroundSize: 'cover', backgroundPosition: 'center',
                   opacity: 0.15,
                 }} />
@@ -259,9 +325,6 @@ export default function MenuPrintPage() {
                   )}
                 </div>
                 <div>
-                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', margin: '0 0 4px' }}>
-                    {data.tag}
-                  </p>
                   <h2 style={{ color: '#fff', fontSize: 34, fontWeight: 400, margin: 0, letterSpacing: 1 }}>
                     {cat}
                   </h2>
@@ -283,7 +346,7 @@ export default function MenuPrintPage() {
               margin: '0 0',
             }}>
               {data.items.map((item, i) => {
-                const imgId = images?.items[i % images.items.length]
+                const imgId = DISH_IMAGES[item.name] || images?.items[i % (images?.items.length || 1)]
                 return (
                   <div key={i} style={{
                     background: '#fff',
@@ -294,13 +357,13 @@ export default function MenuPrintPage() {
                     {imgId && (
                       <div style={{ flexShrink: 0, width: 140 }}>
                         <img
-                          src={imgUrl(imgId, 280, 240)}
+                          src={imgUrl(imgId, 200, 160)}
                           alt={item.name}
                           style={{
                             width: '100%', height: '100%',
                             objectFit: 'cover', display: 'block',
                           }}
-                          loading="lazy"
+                          loading="eager"
                         />
                       </div>
                     )}
@@ -412,10 +475,13 @@ export default function MenuPrintPage() {
 
       {/* Styles CSS pour l'impression */}
       <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @media print {
           .no-print { display: none !important; }
           body { margin: 0; padding: 0; }
           @page { size: A4; margin: 0; }
+          img { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
         @page { size: A4; margin: 0; }
       `}</style>
