@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import MenuPage from './pages/MenuPage'
 import AfichePage from './pages/AfichePage'
+import MenuPrintPage from './pages/MenuPrintPage'
 
 export default function App() {
   const [search, setSearch] = useState('')
@@ -13,6 +14,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<MenuPage search={search} />} />
         <Route path="/affiche" element={<AfichePage />} />
+        <Route path="/pdf" element={<MenuPrintPage />} />
       </Routes>
     </div>
   )

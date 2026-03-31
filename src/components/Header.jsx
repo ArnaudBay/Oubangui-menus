@@ -11,7 +11,7 @@ export default function Header({ search, onSearch }) {
     >
       <div className="max-w-6xl mx-auto px-4 py-4 flex items-center gap-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 flex-1 min-w-0">
+        <Link to="/" className="flex items-center gap-3 flex-1 min-w-0" style={{ minWidth: 0 }}>
           <div className="w-11 h-11 rounded-2xl overflow-hidden shadow-md shrink-0">
             <img
               src="/oubanguiLogo.jpg"
@@ -30,6 +30,23 @@ export default function Header({ search, onSearch }) {
               RESTAURANT
             </p>
           </div>
+        </Link>
+
+        {/* Bouton PDF */}
+        <Link
+          to="/pdf"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: '#1d4ed8', color: '#fff',
+            padding: '7px 14px', borderRadius: 8, fontSize: 13,
+            fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap',
+            boxShadow: '0 2px 8px rgba(29,78,216,0.25)',
+          }}
+        >
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0-3-3m3 3 3-3M3 17V7a2 2 0 0 1 2-2h6l2 2h4a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          </svg>
+          Carte PDF
         </Link>
       </div>
 
